@@ -1,7 +1,8 @@
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from api.models import Task
 from api.serializers import TaskSerializer
+from rest_framework.permissions import IsAuthenticated
 
 @api_view(['GET'])      
 def getRoutes(request): # get all routes
@@ -13,6 +14,7 @@ def getRoutes(request): # get all routes
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getTasks(request):
     tasks = Task.objects.all()
     if not tasks.exists():
@@ -21,6 +23,7 @@ def getTasks(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getTask(request, pk): # get single task
     try:
         task = Task.objects.get(id=pk)  # get single task
@@ -30,6 +33,7 @@ def getTask(request, pk): # get single task
         return Response({'message': f'Task {pk} not found'})
     
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def createTask(request):
     serializer = TaskSerializer(data=request.data)
     if serializer.is_valid():
@@ -43,6 +47,7 @@ def createTask(request):
             
             
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def updateTask(request, pk):
     task = Task.objects.get(id=pk)
     serializer = TaskSerializer(instance=task, data=request.data)
@@ -55,6 +60,7 @@ def updateTask(request, pk):
     
 
 @api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def deleteTask(request, pk):
     try:
         task = Task.objects.get(id=pk)
